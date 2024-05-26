@@ -6,9 +6,10 @@ class LoadBalancer:
         # Create a new socket which will listen to connections coming from clients.
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.port = 1000
-        self.hostname = 127.0.0.1
+        self.hostname = "127.0.0.1"
+        self.add_server()
 
-    def start(self):
+    def start(self, ServerPool):
         # Bind the socket to the port and hostname specified in the init function
         self.socket.bind(self.hostname, self.port)
         # Start listening for incoming connections from clients
@@ -17,9 +18,62 @@ class LoadBalancer:
         conn, addr = self.socket.accept()
         # Send a message to the client
         conn.send("Welcome ... we will serve you in a minute")
+
+    def run(self):
+        while True:
+            self.start()
+            # Receive a message from the client
+            data = self.conn.recv(1024)
+            print(data)
+            #if the client has timed out then close the connection
+            if not data:
+                break
+            # # Send a response to the client
+            # self.conn.send(data)
+            # Close the connection with the client
+            self.conn.close()
+
+
+
+class ServerPool:
+
+    def __init__(self):
+        self.server_pool = []
+    
+    def add_server(self, server):
+        self.server_pool.append(server)
+
+    def remove_server(self, server, HealthCheck):
+        # Remove the server from the pool if it is not working
+        for server in self.server_pool:
+            if HealthCheck.is_down(server):
+                self.server_pool.remove(server)
+
+class HealthChecker:
+    
+    def __init__(self,server_pool) -> None:
+        self.server_pool = server_pool
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.data_packet = b'This is a test data packet'
+
+    def is_down(self, server):
+        # Check if the server is down
+        try:
+            # Connect to the server's host and port names as provided
+            self.socket.connect(server.hostname, server.port)
+            # Send a dummy packet to the server
+            self.socket.send(self.data_packet)
+            response = self.socket.recv(1024)
+            if response.__contains__("200"):
+            ## pretty bad way to check if the server is down
+            ##trying to check if ok is returned in the payload somewhere has 200
+                return True
+            else:
+                return False
+        except:
+            return True
+
         
-
-
 class Port:
     pass
 
@@ -27,7 +81,8 @@ class Listner:
     pass
 
 class Server:
-    pass
+    def __init__(self) -> None:
+        self
 
 class Client:
     pass
@@ -56,8 +111,8 @@ class HttpTransaction:
     pass
 
 def main():
-    LoadBalancer = LoadBalancer()
-    LoadBalancer.start()
+    lb = LoadBalancer()
+    lb.start()
 
 if __name__ == "__main__":
     main()
