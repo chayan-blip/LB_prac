@@ -1,10 +1,23 @@
+import socket
+import random
 class LoadBalancer:
     
-    def __init__(self,
-                 port=None,
-                 hostName=None):
-        # Create a new address to which the connecting requesters will connect to.
-        self.Load_balancer_address = 
+    def __init__(self):
+        # Create a new socket which will listen to connections coming from clients.
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.port = 1000
+        self.hostname = 127.0.0.1
+
+    def start(self):
+        # Bind the socket to the port and hostname specified in the init function
+        self.socket.bind(self.hostname, self.port)
+        # Start listening for incoming connections from clients
+        self.socket.listen(5)
+        # Accept a connection from a client
+        conn, addr = self.socket.accept()
+        # Send a message to the client
+        conn.send("Welcome ... we will serve you in a minute")
+        
 
 
 class Port:
@@ -20,7 +33,7 @@ class Client:
     pass
 
 # TODO: Implement dynamic versus static load balancing where the number of servers being load
-    # balanced changes. on th fly
+    # balanced changes on the fly
 # TODO: Implement failed requests
 # TODO: Implement timeouts
 # TODO: Implement cli
@@ -43,7 +56,8 @@ class HttpTransaction:
     pass
 
 def main():
-    pass
+    LoadBalancer = LoadBalancer()
+    LoadBalancer.start()
 
 if __name__ == "__main__":
     main()
