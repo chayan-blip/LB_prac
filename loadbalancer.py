@@ -2,12 +2,13 @@ import socket
 import random
 class LoadBalancer:
     
-    def __init__(self):
+    def __init__(self, serverpool=None):
         # Create a new socket which will listen to connections coming from clients.
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.port = 1000
         self.hostname = "127.0.0.1"
         self.add_server()
+        self.serverpool = serverpool
 
     def start(self, ServerPool):
         # Bind the socket to the port and hostname specified in the init function
@@ -34,18 +35,35 @@ class LoadBalancer:
             self.conn.close()
 
 
+class LoadBalancingStrategy:
+    def select_server(self,serverpool,request):
+        pass
+
+
+class RoundRobinStrategy(LoadBalancingStrategy):
+    def __init__(self) -> None:
+        self.server_index = 0
+
+    def select_server(self,serverpool):
+        server_to_return = serverpool.server_list[self.server_index]
+        self.server_index = (self.server_index + 1) % len(serverpool.server_list)
+        return server_to_return
+
 
 class ServerPool:
 
-    def __init__(self):
-        self.server_pool = []
+    def __init__(self, strategy):
+        self.server_list = []
+        # Initialize the server pool selection strategy which returns
+        # a specified server from the list of servers
+        self.strategy = strategy
     
     def add_server(self, server):
-        self.server_pool.append(server)
+        self.server_list.append(server)
 
     def remove_server(self, server, HealthCheck):
         # Remove the server from the pool if it is not working
-        for server in self.server_pool:
+        for server in self.server_list:
             if HealthCheck.is_down(server):
                 self.server_pool.remove(server)
 
