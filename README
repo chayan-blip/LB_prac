@@ -1,0 +1,4 @@
+Basic loadbalancer implementation.
+To view the class interaction using a sequence diagram
+-> Visit the site https://www.planttext.com/ 
+-> Paste the loadbalancer_puml_diagram code into the editor
