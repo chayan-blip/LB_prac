@@ -1,0 +1,16 @@
+@startuml
+participant Client
+participant LoadBalancer
+participant LoadBalancingStrategy
+participant ServerPool
+participant Server
+
+Client -> LoadBalancer : Request
+LoadBalancer -> LoadBalancingStrategy : selectServer(ServerPool)
+LoadBalancingStrategy -> ServerPool : getAvailableServers()
+ServerPool -> LoadBalancingStrategy : ServerList
+LoadBalancingStrategy -> LoadBalancer : Server
+LoadBalancer -> Server : Forward Request
+Server -> LoadBalancer : Response
+LoadBalancer -> Client : Response
+@enduml
