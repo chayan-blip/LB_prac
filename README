@@ -1,4 +1,6 @@
-Basic loadbalancer implementation.
+Basic loadbalancer implementation to learn OOP.
 To view the class interaction using a sequence diagram
+open loadbalancer.png
+OR
 -> Visit the site https://www.planttext.com/ 
--> Paste the loadbalancer_puml_diagram code into the editor
+-> Paste the loadbalancer_puml_diagram code into the editor 
